@@ -8,6 +8,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution items", "Solution 
 		.editorconfig = .editorconfig
 		.gitignore = .gitignore
 		Common.Configurations.targets = Common.Configurations.targets
+		.gitlab-ci.yml = .gitlab-ci.yml
+		.dockerignore = .dockerignore
+		Dockerfile = Dockerfile
+		README.md = README.md
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{783FABAB-CA9E-4FC8-AE14-A478F4181DB1}"
