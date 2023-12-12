@@ -1,0 +1,11 @@
+﻿{
+  "profiles": {
+    "TelegramService": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "externalUrlConfiguration": true
+    }
+  }
+}
