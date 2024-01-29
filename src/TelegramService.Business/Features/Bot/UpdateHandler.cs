@@ -26,7 +26,7 @@ public class UpdateHandler
     var errorMessage = exception switch
     {
       ApiRequestException apiRequestException => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
-      _                                       => exception.ToString()
+      _ => exception.ToString()
     };
 
     _logger.LogInformation("HandleError: {ErrorMessage}", errorMessage);
@@ -37,8 +37,8 @@ public class UpdateHandler
   {
     var handler = update switch
     {
-      { Message: { } message }                       => MessageReceivedAsync(message, ct),
-      _                                              => UnknownUpdateReceivedAsync(update)
+      { Message: { } message } => MessageReceivedAsync(message, ct),
+      _ => UnknownUpdateReceivedAsync(update)
     };
 
     await handler;
@@ -90,6 +90,7 @@ public class UpdateHandler
       replyMarkup: new ReplyKeyboardRemove(),
       cancellationToken: ct);
   }
+  
   private Task UnknownUpdateReceivedAsync(Update update)
   {
     _logger.LogInformation("Unknown update type: {UpdateType}", update.Type);

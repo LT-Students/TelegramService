@@ -34,7 +34,7 @@ public class ValidateTelegramBotFilter : IActionFilter
 
   private bool IsValidToken(HttpRequest request)
   {
-    var isSecretTokenProvided = request.Headers.TryGetValue("X-Telegram-Bot-Api-Secret-Token", out var secretTokenHeader);
+    bool isSecretTokenProvided = request.Headers.TryGetValue("X-Telegram-Bot-Api-Secret-Token", out var secretTokenHeader);
     return isSecretTokenProvided && string.Equals(secretTokenHeader, _botSecretToken, StringComparison.Ordinal);
   }
 }
