@@ -30,5 +30,6 @@
     <PackageReference Include="LTDO.Kernel.EFSupport" Version="1.0.8" />
     <PackageReference Include="LTDO.Kernel.RedisSupport" Version="1.0.15" />
     <PackageReference Include="LTDO.Models" Version="1.0.59" />
+    <PackageReference Include="Telegram.Bot" Version="19.0.0" />
   </ItemGroup>
 </Project>
