@@ -21,7 +21,25 @@ public class UpdateHandler
     _logger = logger;
   }
 
-  public Task HandleErrorAsync(Exception exception, CancellationToken ct)
+  public async Task HandleUpdateAsync(Update update, CancellationToken ct)
+  {
+    try
+    {
+      var handler = update switch
+      {
+        { Message: { } message } => MessageReceivedAsync(message, ct),
+        _ => UnknownUpdateReceivedAsync(update)
+      };
+
+      await handler;
+    }
+    catch(Exception exception)
+    {
+      HandleError(exception);
+    }
+  }
+
+  private void HandleError(Exception exception)
   {
     var errorMessage = exception switch
     {
@@ -30,18 +48,6 @@ public class UpdateHandler
     };
 
     _logger.LogInformation("HandleError: {ErrorMessage}", errorMessage);
-    return Task.CompletedTask;
-  }
-
-  public async Task HandleUpdateAsync(Update update, CancellationToken ct)
-  {
-    var handler = update switch
-    {
-      { Message: { } message } => MessageReceivedAsync(message, ct),
-      _ => UnknownUpdateReceivedAsync(update)
-    };
-
-    await handler;
   }
 
   private async Task MessageReceivedAsync(Message message, CancellationToken ct)
@@ -55,11 +61,12 @@ public class UpdateHandler
       "/menu" => SendMenuAsync(_botClient, message, ct),
       _ => SendUsageAsync(_botClient, message, ct)
     };
-    Message sentMessage = await action;
-    _logger.LogInformation("The message was sent with id: {SentMessageId}", sentMessage.MessageId);
+    await action;
+
+    _logger.LogInformation("The message was sent with id: {SentMessageId}", action.Result.MessageId);
   }
 
-  private async Task<Message> SendMenuAsync(ITelegramBotClient botClient, Message message, CancellationToken ct)
+  private Task<Message> SendMenuAsync(ITelegramBotClient botClient, Message message, CancellationToken ct)
   {
     InlineKeyboardMarkup inlineKeyboard = new(
       new[]
@@ -75,22 +82,22 @@ public class UpdateHandler
         },
       });
 
-    return await botClient.SendTextMessageAsync(
+    return botClient.SendTextMessageAsync(
       chatId: message.Chat.Id,
       text: BotResources.MenuMessage,
       replyMarkup: inlineKeyboard,
       cancellationToken: ct);
   }
 
-  private async Task<Message> SendUsageAsync(ITelegramBotClient botClient, Message message, CancellationToken ct)
+  private Task<Message> SendUsageAsync(ITelegramBotClient botClient, Message message, CancellationToken ct)
   {
-    return await botClient.SendTextMessageAsync(
+    return botClient.SendTextMessageAsync(
       chatId: message.Chat.Id,
       text: BotResources.UsageMessage,
       replyMarkup: new ReplyKeyboardRemove(),
       cancellationToken: ct);
   }
-  
+
   private Task UnknownUpdateReceivedAsync(Update update)
   {
     _logger.LogInformation("Unknown update type: {UpdateType}", update.Type);
