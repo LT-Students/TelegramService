@@ -17,6 +17,7 @@
 
     <ItemGroup>
       <ProjectReference Include="..\TelegramService.Broker\TelegramService.Broker.csproj" />
+      <ProjectReference Include="..\TelegramService.Business\TelegramService.Business.csproj" />
       <ProjectReference Include="..\TelegramService.DataLayer\TelegramService.DataLayer.csproj" />
     </ItemGroup>
     

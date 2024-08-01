@@ -16,6 +16,8 @@ using LT.DigitalOffice.Kernel.RedisSupport.Configurations;
 using LT.DigitalOffice.Kernel.RedisSupport.Constants;
 using LT.DigitalOffice.Kernel.RedisSupport.Helpers;
 using LT.DigitalOffice.TelegramService.Broker.Configurations;
+using LT.DigitalOffice.TelegramService.Business.Features.Bot;
+using LT.DigitalOffice.TelegramService.Business.Shared;
 using LT.DigitalOffice.TelegramService.DataLayer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Diagnostics.HealthChecks;
@@ -24,6 +26,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.HealthChecks;
 using Microsoft.Extensions.Logging;
+using Telegram.Bot;
 
 namespace LT.DigitalOffice.TelegramService;
 
@@ -132,6 +135,25 @@ public class Startup : BaseApiInfo
     services.AddBusinessObjects();
 
     services.ConfigureMassTransit(_rabbitMqConfig);
+
+    string botToken = Environment.GetEnvironmentVariable("BotToken");
+    services.Configure<TelegramBotConfig>(configuration =>
+    {
+      configuration.BotHostAddress = Environment.GetEnvironmentVariable("BotHostAddress");
+      configuration.BotRoute = Environment.GetEnvironmentVariable("BotRoute");
+      configuration.BotToken = botToken;
+      configuration.BotSecretToken = Environment.GetEnvironmentVariable("BotSecretToken");
+    });
+
+    services.AddHttpClient("TelegramBotClient")
+      .AddTypedClient<ITelegramBotClient>(httpClient =>
+      {
+        TelegramBotClientOptions options = new(botToken);
+        return new TelegramBotClient(options, httpClient);
+      });
+
+    services.AddScoped<UpdateHandler>();
+    services.AddHostedService<ConfigureWebhook>();
   }
 
   public void Configure(IApplicationBuilder app, ILoggerFactory loggerFactory)
